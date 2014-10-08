@@ -5,12 +5,12 @@
   "AppIdentifier": "com.telerik.CordovaPluginAppTestBed",
   "DisplayName": "Cordova Plugin App Test Bed",
   "Author": "",
-  "Description": "",
+  "Description": "Cordova Plugin App Test Bed",
   "BundleVersion": "1.0",
   "AndroidVersionCode": "1",
   "iOSDeviceFamily": [
     "1",
-	"2"
+    "2"
   ],
   "iOSBackgroundMode": [],
   "WP8TileTitle": "",
@@ -40,7 +40,9 @@
     "org.apache.cordova.network-information",
     "org.apache.cordova.splashscreen",
     "org.apache.cordova.statusbar",
-    "org.apache.cordova.vibration"
+    "org.apache.cordova.vibration",
+    "com.telerik.plugins.nativepagetransitions@0.1.3",
+    "nl.x-services.plugins.toast@2.0.1"
   ],
   "AndroidPermissions": [
     "android.permission.ACCESS_COARSE_LOCATION",

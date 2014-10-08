@@ -4,13 +4,62 @@
     <title></title>
     <meta charset="utf-8" />
     <link href="kendo/styles/kendo.mobile.all.min.css" rel="stylesheet" />
-
+    <link href="styles/main.css" rel="stylesheet" />
+    
     <script src="cordova.js"></script>
     <script src="kendo/js/jquery.min.js"></script>
     <script src="kendo/js/kendo.mobile.min.js"></script>
-    
+    <script src="scripts/app.js"></script>
+
 </head>
 <body>
+    
+    <div id="all-contacts" data-role="view" data-title="My Contacts" data-show="getAllContacts">
+        <header data-role="header">
+            <div data-role="navbar">
+                <div data-role="view-title"></div>
+            </div>
+        </header>
+        <ul id="contacts-list" data-role="listview"></ul>
+    </div>
+    
+    <script id="contacts-template" type="text/x-kendo-template">
+        <li>
+            <a href="javascript:slide('left', '\#view-contact?id=${id}')" class="expand">
+                # if (photos && photos.length) { #
+                    <img class="smallProfile" src="${photos[0].value}" />
+                # } else { #
+                    <img class="smallProfile" src="styles/blankProfile.png" />
+                # } #
+        
+                # if (name.givenName) { #
+                    ${name.givenName}
+                # } #
+        
+                # if (name.familyName) { #
+                    ${name.familyName}
+                # } #
+            </a>
+        </li>
+    </script> 
+    
+    <div id="view-contact" data-role="view" data-title="Contact Details" data-show="getContactDetails">
+        <header data-role="header">
+            <div data-role="navbar">
+                <a data-align="left" data-role="backbutton">Back</a>
+                <div data-role="view-title"></div>
+            </div>
+        </header>
+        
+        <img class="largeProfile" />
+        
+        <h2><span id="contact-name"></span></h2>
+        
+        <h4><span id="contact-phone"></span></h4>
+        
+        <button id="update-photo" style="width:99%" data-role="button" onclick="UpdatePhoto()">Update Photo</button>
+        
+    </div>
     
 </body>
 </html>
