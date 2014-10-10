@@ -2,17 +2,17 @@ var app, selectedContact, selectedContactId;
 
 document.addEventListener('deviceready', function () {  
     navigator.splashscreen.hide();
-    app = new kendo.mobile.Application(document.body, {transition: 'slide', skin: 'flat'});
+    app = new kendo.mobile.Application(document.body, {skin: 'flat'}); //transition: 'slide', 
 }, false);
 
-function slide(dir, href) {
+/*function slide(dir, href) {
     if (window.plugins && window.plugins.nativepagetransitions) {
         window.plugins.nativepagetransitions.slide({'direction' : dir, 'href' : href});
     } else {
         app.navigate(href);
     }
 }
-
+*/
 function getAllContacts() {
     var options = new ContactFindOptions();
     options.filter = "";           
