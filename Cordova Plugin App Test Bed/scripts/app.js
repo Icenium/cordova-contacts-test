@@ -1,134 +1,89 @@
-var app, selectedContact, selectedContactId;
+(function () {
+    
+    var app, selectedContact, selectedContactId;
 
-document.addEventListener('deviceready', function () {  
-    navigator.splashscreen.hide();
-    app = new kendo.mobile.Application(document.body, {skin: 'flat'}); //transition: 'slide', 
-}, false);
+    document.addEventListener('deviceready', function () {  
+        navigator.splashscreen.hide();
+        app = new kendo.mobile.Application(document.body, {skin: 'flat', transition: 'slide'});
+    }, false);
 
-/*function slide(dir, href) {
-    if (window.plugins && window.plugins.nativepagetransitions) {
-        window.plugins.nativepagetransitions.slide({'direction' : dir, 'href' : href});
-    } else {
-        app.navigate(href);
+    window.getAllContacts = function() {
+        var options = new ContactFindOptions();
+        options.filter = "";           
+        options.multiple = true;       
+        var fields = ["*"];  
+        navigator.contacts.find(fields, onContactSuccess, onError, options);
     }
-}
-*/
-function getAllContacts() {
-    var options = new ContactFindOptions();
-    options.filter = "";           
-    options.multiple = true;       
-    var fields = ["*"];  
-    navigator.contacts.find(fields, onSuccess, onError, options);
-}
 
-function onSuccess(contacts) {  
-    
-
-    
-    //console.log(contacts);
-    
-/*    var template = kendo.template($("#contacts-template").html());
-        var data = contacts; //A value in JavaScript/JSON
-        var result = template(data); //Pass the data to the compiled template
-        $("#contacts-list").html(result); //display the result*/
-    
-       var template = kendo.template($("#contacts-template").html());
+    function onContactSuccess(contacts) {  
+        var template = kendo.template($("#contacts-template").html());
         var dataSource = new kendo.data.DataSource({ data: contacts });
         dataSource.bind("change", function () {
             $("#contacts-list").html(kendo.render(template, dataSource.view()));
         });
         dataSource.read();
-}
+    }
 
-function onError(contactError) {
-    alert('Error in getting Phone Contacts');
-}
+    window.getContactDetails = function(e) {
+        selectedContactId = e.view.params.id;
+        var options = new ContactFindOptions();
+        options.filter = e.view.params.id;           
+        options.multiple = true;       
+        var fields = ["*"];   
+        navigator.contacts.find(fields, onContactDetailSuccess, onError, options);
+    }
 
-
-function getContactDetails(e) {
-    console.log(e.view.params.id);
-    
-    selectedContactId = e.view.params.id;
-    
-    var options = new ContactFindOptions();
-    options.filter = e.view.params.id;           
-    options.multiple = true;       
-    var fields = ["*"];   
-    navigator.contacts.find(fields, onSuccess2, onError, options);
-    
-
-    
-}
-
-function onSuccess2(contacts) {
-    // since we can't guarantee that our filter was accurate, we have to iterate through all the returned records
-    
-    for (var i = 0; i < contacts.length; i++) 
-    {  
-        if (contacts[i].id == selectedContactId)
-        {
-            //alert(contacts[i].id);
-            
-            //console.log(contacts[i]);
-            
-            $("#contact-name").text(getName(contacts[i]));
-            
-            if (contacts[i].phoneNumbers) {
-                $("#contact-phone").text(contacts[i].phoneNumbers[0].value);
-            } else {
-                $("#contact-phone").text("");
+    function onContactDetailSuccess(contacts) {
+        // since we can't guarantee that our filter was accurate, we have to iterate through all the returned records
+        for (var i = 0; i < contacts.length; i++) 
+        {  
+            if (contacts[i].id == selectedContactId)
+            {
+                $("#contact-name").text(getName(contacts[i]));
+                
+                if (contacts[i].phoneNumbers) {
+                    $("#contact-phone").text(contacts[i].phoneNumbers[0].value);
+                } else {
+                    $("#contact-phone").text("");
+                }
+                
+                if (contacts[i].photos && contacts[i].photos.length) {
+                    $(".largeProfile").attr("src", contacts[i].photos[0].value);
+                } else {
+                    $(".largeProfile").attr("src", "styles/blankProfile.png");
+                }
+                
+                selectedContact = contacts[i];
+                
+                break;
             }
-            
-           
-            
-            if (contacts[i].photos && contacts[i].photos.length) {
-                $(".largeProfile").attr("src", contacts[i].photos[0].value);
-                 console.log("photo: " + contacts[i].photos[0].value);
-            } else {
-                $(".largeProfile").attr("src", "styles/blankProfile.png");
-            }
-            
-            selectedContact = contacts[i];
-            
-            break;
+        }  
+    }
+    
+    window.updatePhoto = function() {
+        navigator.camera.getPicture(onPhotoSuccess, onError, { quality: 50, destinationType: Camera.DestinationType.FILE_URI });
+    }
+
+    function onPhotoSuccess(imageURI) {
+        $(".largeProfile").attr("src", imageURI);
+        var photo=[];
+        photo[0] = new ContactField('photo', imageURI, false)
+        selectedContact.photos = photo;
+        selectedContact.save();
+
+        if (window.plugins && window.plugins.toast) {
+            window.plugins.toast.showShortCenter("The profile picture has been updated!");
         }
     }
-    
-}
 
-
-/*
-Handles iOS not returning displayName or returning null/""
-*/
-function getName(c) {
-	//var name = c.displayName;
-	//if(!name || name === "") {
-		if(c.name.formatted) return c.name.formatted;
-		if(c.name.givenName && c.name.familyName) return c.name.givenName +" "+c.name.familyName;
-		return "No Name Listed";
-	//}
-	//return name;
-}
-
-
-function UpdatePhoto() {
-    navigator.camera.getPicture(onPhotoSuccess, onPhotoFail, { quality: 50, destinationType: Camera.DestinationType.FILE_URI });
-}
-
-function onPhotoSuccess(imageURI) {
-    $(".largeProfile").attr("src", imageURI);
-    //console.log(imageURI);
-    var photo=[];
-    photo[0] = new ContactField('photo', imageURI, false)
-    selectedContact.photos = photo;
-    selectedContact.save();
-    
-    if (window.plugins && window.plugins.toast) {
-        window.plugins.toast.showShortCenter("The profile picture has been updated!");
+    function onError() {
+        alert("Sorry, but there was error!");
     }
-}
+    // Handles iOS not returning displayName or returning null
+    function getName(c) {
+    	if(c.name.formatted) return c.name.formatted;
+    	if(c.name.givenName && c.name.familyName) return c.name.givenName +" "+c.name.familyName;
+    	return "No Name Listed";
+    }
 
-function onPhotoFail(message) {
-    navigator.notification.alert(message, function () {
-    }, 'Your picture capture failed:', 'Done');
-}
+}());

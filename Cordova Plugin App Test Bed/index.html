@@ -11,11 +11,10 @@
     <script src="kendo/js/kendo.mobile.min.js"></script>
     <script src="scripts/NativePageTransitionsKendoAdapter.js"></script>
     <script src="scripts/app.js"></script>
-
 </head>
 <body>
     
-    <div id="all-contacts" data-role="view" data-title="My Contacts" data-show="getAllContacts">
+    <div id="all-contacts" data-role="view" data-title="My Contacts" data-show="window.getAllContacts">
         <header data-role="header">
             <div data-role="navbar">
                 <div data-role="view-title"></div>
@@ -26,7 +25,7 @@
     
     <script id="contacts-template" type="text/x-kendo-template">
         <li>
-            <a data-transition="flip" href="\#view-contact?id=${id}" class="expand">
+            <a href="\#view-contact?id=${id}" class="expand">
                 # if (photos && photos.length) { #
                     <img class="smallProfile" src="${photos[0].value}" />
                 # } else { #
@@ -44,7 +43,7 @@
         </li>
     </script> 
     
-    <div id="view-contact" data-role="view" data-title="Contact Details" data-show="getContactDetails">
+    <div id="view-contact" data-role="view" data-title="Contact Details" data-show="window.getContactDetails">
         <header data-role="header">
             <div data-role="navbar">
                 <a data-align="left" data-role="backbutton">Back</a>
@@ -54,11 +53,11 @@
         
         <img class="largeProfile" />
         
-        <h2><span id="contact-name"></span></h2>
+        <h2 id="contact-name"></h2>
         
-        <h4><span id="contact-phone"></span></h4>
+        <h4 id="contact-phone"></h4>
         
-        <button id="update-photo" style="width:99%" data-role="button" onclick="UpdatePhoto()">Update Photo</button>
+        <button id="update-photo" data-role="button" onclick="window.updatePhoto()">Update Photo</button>
         
     </div>
     
