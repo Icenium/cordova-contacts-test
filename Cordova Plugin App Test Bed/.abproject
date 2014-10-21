@@ -41,8 +41,8 @@
     "org.apache.cordova.splashscreen",
     "org.apache.cordova.statusbar",
     "org.apache.cordova.vibration",
-    "com.telerik.plugins.nativepagetransitions@0.1.3",
-    "nl.x-services.plugins.toast@2.0.1"
+    "nl.x-services.plugins.toast@2.0.1",
+    "com.telerik.plugins.nativepagetransitions@0.1.5"
   ],
   "AndroidPermissions": [
     "android.permission.ACCESS_COARSE_LOCATION",
