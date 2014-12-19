@@ -16,9 +16,10 @@
  * To add a delay for ios or android, add:
  * data-transition-native-androiddelay="200" to the tag (200 ms for android in this case)
  *
+ * To enable transitions for links in remote views, you must add the data-transition attribute to those links.
+ *
  * TODO: add data- attributes for things like duration and slowdownfactor
  * TODO: auto-enhance drawers based on data-rel="drawer" & data-align="right"
- * TODO: add support for remote views
  */
 
 (function() {
@@ -51,14 +52,29 @@
           var backbuttons = backbuttonView.querySelectorAll('a[data-role="backbutton"]:not([data-rel])');
           for (var j = 0; j < backbuttons.length; j++) {
             var backbutton = backbuttons[j];
-            if (backbutton.getAttribute("data-transition-native") !== "false") {
+            var href = backbutton.getAttribute("href");
+            if (href != null && backbutton.getAttribute("data-transition-native") !== "false") {
               var transition = transitionStack.pop() || "slide:right";
-              if (transition.indexOf("flip") > -1) {
-                backbutton.setAttribute("onclick", 'event.preventDefault()');
-                backbutton.setAttribute("ontouchend", 'event.preventDefault(); setTimeout(function(){window.kendo.mobile.application.pane.navigate("#:back")},20); window.NativePageTransitionsKendoAdapter.flip(\'right\', null, \'' + 100 + '\', \'' + 100 + '\')');
+              if (href == "#:back") {
+                if (transition.indexOf("flip") > -1) {
+                  backbutton.setAttribute("onclick", 'event.preventDefault ? event.preventDefault() : event.returnValue = false;');
+                  backbutton.setAttribute("ontouchend", 'event.preventDefault ? event.preventDefault() : event.returnValue = false; setTimeout(function(){window.kendo.mobile.application.pane.navigate("#:back")},20); window.NativePageTransitionsKendoAdapter.flip(\'right\', null, \'' + 100 + '\', \'' + 100 + '\')');
+                } else {
+                  backbutton.setAttribute("onclick", 'event.preventDefault ? event.preventDefault() : event.returnValue = false;');
+                  backbutton.setAttribute("ontouchend", 'event.preventDefault ? event.preventDefault() : event.returnValue = false; setTimeout(function(){window.kendo.mobile.application.pane.navigate("#:back")},20); window.NativePageTransitionsKendoAdapter.slide(\'right\', null, \'' + 140 + '\', \'' + 140 + '\')');
+                }
               } else {
-                backbutton.setAttribute("onclick", 'event.preventDefault()');
-                backbutton.setAttribute("ontouchend", 'event.preventDefault(); setTimeout(function(){window.kendo.mobile.application.pane.navigate("#:back")},20); window.NativePageTransitionsKendoAdapter.slide(\'right\', null, \'' + 140 + '\', \'' + 140 + '\')');
+                // this branch is for remote views
+                if (href.indexOf("#") == -1) {
+                  href = "#" + href;
+                }
+                if (transition.indexOf("flip") > -1) {
+                  backbutton.setAttribute("onclick", 'event.preventDefault ? event.preventDefault() : event.returnValue = false;');
+                  backbutton.setAttribute("ontouchend", 'event.preventDefault ? event.preventDefault() : event.returnValue = false; window.NativePageTransitionsKendoAdapter.flip(\'right\', \''+href+'\', \'' + 100 + '\', \'' + 100 + '\')');
+                } else {
+                  backbutton.setAttribute("onclick", 'event.preventDefault ? event.preventDefault() : event.returnValue = false;');
+                  backbutton.setAttribute("ontouchend", 'event.preventDefault ? event.preventDefault() : event.returnValue = false; window.NativePageTransitionsKendoAdapter.slide(\'right\', \''+href+'\', \'' + 140 + '\', \'' + 140 + '\')');
+                }
               }
             }
           }
@@ -91,8 +107,12 @@
           // add a data-transition attribute to all anchors without one, so the processing below is uniform
           for (var t = 0; t < transAnchors.length; t++) {
             var theAnchor = transAnchors[t];
-            if (!theAnchor.hasAttribute("data-transition")) {
-              theAnchor.setAttribute("data-transition", defaultTransition);
+            // exclude and links with window.open
+            var lowerhref = theAnchor.getAttribute('href').toLowerCase();
+            if (lowerhref.indexOf("window.open") == -1 && lowerhref.indexOf("url.loadurl") == -1) {
+              if (!theAnchor.hasAttribute("data-transition")) {
+                theAnchor.setAttribute("data-transition", defaultTransition);
+              }
             }
           }
         }
@@ -103,10 +123,12 @@
             if (transition != null && transition != "none") {
               var href = transAnchor.getAttribute("href");
 
-              // Kendo remote view support (work in progress, call the plugin directly for now, without a href param)
-              // if (href.indexOf("#")==-1 && href.indexOf(".") > -1) {
-              //   href = "#" + href.substr(0, href.indexOf("."));
-              // }
+              if (href != null) {
+                // Kendo remote view support
+                if (href.indexOf("#") == -1 && href.indexOf(".") > -1) {
+                  href = "#" + href;
+                }
+              }
 
               var androiddelay = transAnchor.getAttribute("data-transition-native-androiddelay");
               var iosdelay = transAnchor.getAttribute("data-transition-native-iosdelay");
@@ -120,7 +142,9 @@
                 continue;
               }
               // removing these will prevent these element to be processed again in this lifecycle
-              transAnchor.removeAttribute("href");
+              if (href != null) {
+                transAnchor.removeAttribute("href");
+              }
               transAnchor.removeAttribute("data-transition");
             }
           }
@@ -145,12 +169,13 @@
     },
 
     slide : function (direction, href, androiddelay, iosdelay) {
-      event.preventDefault();
+      event.preventDefault ? event.preventDefault() : event.returnValue = false;
       transitionStack.push("slide:" + (direction == 'left' ? 'right' : 'left'));
       window.plugins.nativepagetransitions.slide({
             'direction': direction,
             'androiddelay': androiddelay,
             'iosdelay': iosdelay,
+//            'winphonedelay': winphonedelay,
             'href': href
           },
           function () {
@@ -162,12 +187,13 @@
     },
 
     flip : function (direction, href, androiddelay, iosdelay) {
-      event.preventDefault();
+      event.preventDefault ? event.preventDefault() : event.returnValue = false;
       transitionStack.push("flip:" + (direction == 'right' ? 'left' : 'right'));
       window.plugins.nativepagetransitions.flip({
             'direction': direction,
             'androiddelay': androiddelay,
             'iosdelay': iosdelay,
+//            'winphonedelay': winphonedelay,
             'href': href
           },
           function () {
@@ -234,6 +260,10 @@
         // listen for elements with a-tags added to the dom
         var dispatchIndex = 0;
         document.body.addEventListener("DOMNodeInserted", function() {
+          // TODO no event on wp8
+          if (!event) {
+            return;
+          }
           var target = event.relatedNode;
           var addedAnchors = target.getElementsByTagName("a");
           if (addedAnchors.length > 0) {
@@ -242,7 +272,6 @@
               // enhance the anchors if there is no newer pending event within this timeout
               if (dispatchIndex == thisIndex) {
                 window.NativePageTransitionsKendoAdapter.apply();
-                console.log("--------- enhancing for index: " + thisIndex);
               }
             }, 20);
           }
