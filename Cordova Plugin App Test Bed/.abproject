@@ -17,11 +17,13 @@
   "WP8Publisher": "",
   "WP8Capabilities": [],
   "WP8Requirements": [],
-  "WP8PublisherID": "",
-  "WP8ProductID": "",
+  "WP8PublisherID": "{99fcd1be-825b-4dac-92bb-99f2213d8b63}",
+  "WP8ProductID": "{e0eaf015-03f9-487f-a06a-fe87c0966e64}",
   "ProjectTypeGuids": "{070BCB52-5A75-4F8C-A973-144AF0EAFCC9}",
   "FrameworkVersion": "3.5.0",
   "CorePlugins": [
+    "com.telerik.plugins.nativepagetransitions@0.2.7",
+    "nl.x-services.plugins.toast@2.0.1",
     "org.apache.cordova.battery-status",
     "org.apache.cordova.camera",
     "org.apache.cordova.console",
@@ -40,9 +42,7 @@
     "org.apache.cordova.network-information",
     "org.apache.cordova.splashscreen",
     "org.apache.cordova.statusbar",
-    "org.apache.cordova.vibration",
-    "nl.x-services.plugins.toast@2.0.1",
-    "com.telerik.plugins.nativepagetransitions@0.1.5"
+    "org.apache.cordova.vibration"
   ],
   "AndroidPermissions": [
     "android.permission.ACCESS_COARSE_LOCATION",
