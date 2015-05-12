@@ -20,7 +20,7 @@
   "WP8PublisherID": "{0482453c-bcf2-4da7-88cd-2e10f79bd6cb}",
   "WP8ProductID": "{2a0cc233-bd9b-4068-a6cf-4f3f961d2628}",
   "ProjectTypeGuids": "{070BCB52-5A75-4F8C-A973-144AF0EAFCC9}",
-  "FrameworkVersion": "3.5.0",
+  "FrameworkVersion": "3.7.0",
   "CorePlugins": [
     "org.apache.cordova.battery-status",
     "org.apache.cordova.camera",
