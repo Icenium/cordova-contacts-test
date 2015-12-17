@@ -1,11 +1,11 @@
 {
-  "ProjectName": "Cordova Plugin App Test Bed",
+  "ProjectName": "Contacts",
   "ProjectGuid": "82fb0a71-eddf-4e3a-ab07-e58869f6e668",
   "projectVersion": 1,
-  "AppIdentifier": "com.telerik.CordovaPluginAppTestBed",
-  "DisplayName": "Cordova Plugin App Test Bed",
+  "AppIdentifier": "com.telerik.Contacts",
+  "DisplayName": "Contacts",
   "Author": "",
-  "Description": "Cordova Plugin App Test Bed",
+  "Description": "A test bed for testing Cordova plugins",
   "BundleVersion": "1.0",
   "AndroidVersionCode": "1",
   "iOSDeviceFamily": [
